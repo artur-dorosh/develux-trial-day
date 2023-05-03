@@ -14,7 +14,7 @@ app.listen(port, (err) => {
     }
 });
 
-const makeAuthorizeUrl = () => {
+const makeAuthorizeClient = () => {
     const config = {
         client: {
             id: '6gd7kzaUQRUDJATX2z',
@@ -27,14 +27,12 @@ const makeAuthorizeUrl = () => {
         }
     };
 
-    const client = new AuthorizationCode(config);
-
-    return client.authorizeURL();
+    return new AuthorizationCode(config);
 }
 
-const createLocalEndpoints = (authorizationUri, packageName, packageVersion, repositoryName, branchName) => {
+const createLocalEndpoints = (client, packageName, packageVersion, repositoryName, branchName) => {
     app.get('/auth', (req, res) => {
-        res.redirect(authorizationUri);
+        res.redirect(client.authorizeURL());
     });
 
     app.get('/callback', async (req, res) => {
@@ -92,7 +90,7 @@ const commitChanges = async (accessToken, repositoryName, branchName, updatedPac
         url,
         {
             message: 'commit created by script',
-            parents: ['refs/head/main'],
+            parents: 'main',
             branch: branchName,
             'package.json': JSON.stringify(updatedPackage)
         },
@@ -134,8 +132,8 @@ const createPullRequest = async (accessToken, repositoryName, branchName) => {
 (async () => {
     const [ packageName, packageVersion, repositoryName, branchName ] = process.argv.slice(2);
     try {
-        const authorizationUri = makeAuthorizeUrl();
-        createLocalEndpoints(authorizationUri, packageName, packageVersion, repositoryName, branchName)
+        const client = makeAuthorizeClient();
+        createLocalEndpoints(client, packageName, packageVersion, repositoryName, branchName)
         await open(`http://localhost:3000/auth`);
     } catch (e) {
         console.error(e);
