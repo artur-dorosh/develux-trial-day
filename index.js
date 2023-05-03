@@ -14,7 +14,7 @@ app.listen(port, (err) => {
     }
 });
 
-const authorize = async (packageName, packageVersion, repositoryName, branchName) => {
+const makeAuthorizeUrl = () => {
     const config = {
         client: {
             id: '6gd7kzaUQRUDJATX2z',
@@ -29,8 +29,10 @@ const authorize = async (packageName, packageVersion, repositoryName, branchName
 
     const client = new AuthorizationCode(config);
 
-    const authorizationUri = client.authorizeURL();
+    return client.authorizeURL();
+}
 
+const createLocalEndpoints = (authorizationUri, packageName, packageVersion, repositoryName, branchName) => {
     app.get('/auth', (req, res) => {
         res.redirect(authorizationUri);
     });
@@ -50,7 +52,7 @@ const authorize = async (packageName, packageVersion, repositoryName, branchName
             console.error('Access Token Error', error.message);
         }
     });
-}
+};
 
 const getPackageJson = async (repositoryName) => {
     const url = `${baseUrl}/${repositoryName}/src/main/package.json`;
@@ -132,7 +134,8 @@ const createPullRequest = async (accessToken, repositoryName, branchName) => {
 (async () => {
     const [ packageName, packageVersion, repositoryName, branchName ] = process.argv.slice(2);
     try {
-        await authorize(packageName, packageVersion, repositoryName, branchName);
+        const authorizationUri = makeAuthorizeUrl();
+        createLocalEndpoints(authorizationUri, packageName, packageVersion, repositoryName, branchName)
         await open(`http://localhost:3000/auth`);
     } catch (e) {
         console.error(e);
