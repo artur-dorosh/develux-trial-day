@@ -1,0 +1,26 @@
+{
+  "name": "develux-trial-day",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artur-dorosh/develux-trial-day.git"
+  },
+  "author": "Artemii Dorosh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/artur-dorosh/develux-trial-day/issues"
+  },
+  "homepage": "https://github.com/artur-dorosh/develux-trial-day#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "express": "^4.18.2",
+    "open": "^9.1.0",
+    "simple-oauth2": "^5.0.0"
+  }
+}
